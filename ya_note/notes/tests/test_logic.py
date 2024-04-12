@@ -1,7 +1,9 @@
 from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
+
 from notes.models import Note
 from notes.forms import WARNING
 
@@ -93,7 +95,10 @@ class TestNoteEditDelete(TestCase):
         self.assertEqual(notes_count, 0)
 
     def test_author_can_edit_note(self):
-        response = self.note_author_client.post(self.edit_url, data=self.form_data)
+        response = self.note_author_client.post(
+            self.edit_url,
+            data=self.form_data
+        )
         self.assertRedirects(response, self.redirect_url)
         self.note.refresh_from_db()
         self.assertEqual(self.note.text, self.NEW_NOTE_TEXT)
@@ -105,7 +110,10 @@ class TestNoteEditDelete(TestCase):
         self.assertEqual(notes_count, 1)
 
     def test_another_user_cant_edit_note(self):
-        response = self.another_author_client.post(self.edit_url, data=self.form_data)
+        response = self.another_author_client.post(
+            self.edit_url,
+            data=self.form_data
+        )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.note.refresh_from_db()
         self.assertEqual(self.note.text, self.NOTE_TEXT)

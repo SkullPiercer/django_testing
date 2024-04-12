@@ -1,10 +1,9 @@
-# test_routes.py
-from http import HTTPStatus
-
 import pytest
+from http import HTTPStatus
+from pytest_django.asserts import assertRedirects
+
 from django.urls import reverse
 
-from pytest_django.asserts import assertRedirects
 
 
 @pytest.mark.parametrize(
@@ -47,7 +46,7 @@ def test_redirects(client, db, name, args):
 
 )
 @pytest.mark.parametrize(
-    'name', 
+    'name',
     (
             'news:edit',
             'news:delete',
