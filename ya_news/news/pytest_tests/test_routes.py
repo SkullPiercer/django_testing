@@ -5,15 +5,14 @@ from pytest_django.asserts import assertRedirects
 from django.urls import reverse
 
 
-
 @pytest.mark.parametrize(
     'name',
     (
-            ('news:home', None),
-            ('news:detail', pytest.lazy_fixture('news_id')),
-            ('users:login', None),
-            ('users:logout', None),
-            ('users:signup', None),
+        ('news:home', None),
+        ('news:detail', pytest.lazy_fixture('news_id')),
+        ('users:login', None),
+        ('users:logout', None),
+        ('users:signup', None),
     )
 )
 def test_home_availability_for_anonymous_user(client, db, name):
@@ -25,8 +24,8 @@ def test_home_availability_for_anonymous_user(client, db, name):
 @pytest.mark.parametrize(
     'name, args',
     (
-            ('news:delete', pytest.lazy_fixture('comment_pk')),
-            ('news:edit', pytest.lazy_fixture('comment_pk')),
+        ('news:delete', pytest.lazy_fixture('comment_pk')),
+        ('news:edit', pytest.lazy_fixture('comment_pk')),
     )
 )
 def test_redirects(client, db, name, args):
@@ -40,16 +39,16 @@ def test_redirects(client, db, name, args):
 @pytest.mark.parametrize(
     'parametrized_client, expected_status',
     (
-            (pytest.lazy_fixture('author_client'), HTTPStatus.OK),
-            (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND)
+        (pytest.lazy_fixture('author_client'), HTTPStatus.OK),
+        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND)
     )
 
 )
 @pytest.mark.parametrize(
     'name',
     (
-            'news:edit',
-            'news:delete',
+        'news:edit',
+        'news:delete',
     )
 )
 def test_pages_availability_for_different_users(
