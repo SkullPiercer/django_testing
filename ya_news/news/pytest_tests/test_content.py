@@ -8,9 +8,9 @@ from news.forms import CommentForm
 @pytest.mark.parametrize(
     'user',
     (
-            (pytest.lazy_fixture('author_client')),
-            (pytest.lazy_fixture('not_author_client')),
-            (pytest.lazy_fixture('client')),
+        (pytest.lazy_fixture('author_client')),
+        (pytest.lazy_fixture('not_author_client')),
+        (pytest.lazy_fixture('client')),
     )
 )
 def test_home_page_content_for_all_users(user, db, news):
@@ -23,9 +23,9 @@ def test_home_page_content_for_all_users(user, db, news):
 
 @pytest.mark.parametrize(
     'user, form_on_page', (
-            (pytest.lazy_fixture('author_client'), True),
-            (pytest.lazy_fixture('not_author_client'), True),
-            (pytest.lazy_fixture('client'), False),
+        (pytest.lazy_fixture('author_client'), True),
+        (pytest.lazy_fixture('not_author_client'), True),
+        (pytest.lazy_fixture('client'), False),
     )
 )
 def test_comment_form_on_page_for_different_users(
