@@ -15,9 +15,9 @@ class TestRoutes(TestCase):
     def setUpTestData(cls):
         cls.client = Client()
         cls.author = User.objects.create(username='Sanya')
-        cls.author_client = cls.client.force_login(cls.author)
+        cls.client.force_login(cls.author)
         cls.another_user = User.objects.create(username='Randomich')
-        cls.another_user_client = cls.client.force_login(cls.another_user)
+        cls.client.force_login(cls.another_user)
         cls.note = Note.objects.create(
             title='Погулять',
             text='С собакой',
@@ -27,15 +27,15 @@ class TestRoutes(TestCase):
 
     def test_availability_for_note_edit_delete(self):
         users = (
-            (self.author_client, HTTPStatus.OK),
-            (self.another_user_client, HTTPStatus.NOT_FOUND),
+            (self.author, HTTPStatus.OK),
+            (self.another_user, HTTPStatus.NOT_FOUND),
         )
 
         for user, status in users:
             for name in ('notes:edit', 'notes:delete'):
                 with self.subTest(user=user, name=name):
                     url = reverse(name, args=(self.note.slug,))
-                    response = self.client.get(url)
+                    response = user.get(url)
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
