@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 
 from notes.forms import NoteForm
@@ -40,6 +40,7 @@ class TestNoteCreatePage(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.client = Client()
         cls.author = User.objects.create(username='Randomich')
         cls.author_client = cls.client.force_login(cls.author)
         cls.other_user = User.objects.create(username='Other User')
