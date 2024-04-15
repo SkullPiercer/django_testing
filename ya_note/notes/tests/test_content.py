@@ -17,9 +17,9 @@ class TestNoteListPage(TestCase):
         cls.client = Client()
         cls.url = reverse('notes:list')
         cls.user = User.objects.create(username='Randomich')
-        cls.user_client = cls.client.force_login(cls.user)
+        cls.client.force_login(cls.user)
         cls.not_author = User.objects.create(username='Not an Author')
-        cls.not_author_client = cls.client.force_login(cls.not_author)
+        cls.client.force_login(cls.not_author)
         for index in range(cls.NUMBER_OF_NOTES):
             note = Note(
                 title=f'Новость номер {index}',
@@ -31,7 +31,7 @@ class TestNoteListPage(TestCase):
         Note.objects.bulk_create(notes)
 
     def test_content_on_page(self):
-        response = self.user_client(self.url)
+        response = self.client.get(self.url)
         self.assertIn('object_list', response.context)
         notes = response.context['object_list']
         self.assertEqual(notes.count(), self.NUMBER_OF_NOTES)
