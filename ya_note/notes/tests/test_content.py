@@ -44,9 +44,11 @@ class TestNoteCreatePage(TestCase):
     def setUpTestData(cls):
         cls.client = Client()
         cls.author = User.objects.create(username='Randomich')
-        cls.author_client = cls.client.force_login(cls.author)
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
         cls.other_user = User.objects.create(username='Other User')
-        cls.other_user_client = cls.client.force_login(cls.other_user)
+        cls.other_user_client = Client()
+        cls.other_user_client.force_login(cls.other_user)
         cls.add_url = reverse('notes:add')
         cls.all_notes_url = reverse('notes:list')
         cls.note = Note.objects.create(
