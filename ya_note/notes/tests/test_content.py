@@ -31,7 +31,7 @@ class TestNoteListPage(TestCase):
         Note.objects.bulk_create(notes)
 
     def test_content_on_page(self):
-        response = self.client.get(self.url)
+        response = self.user.get(self.url)
         self.assertIn('object_list', response.context)
         notes = response.context['object_list']
         self.assertEqual(notes.count(), self.NUMBER_OF_NOTES)
