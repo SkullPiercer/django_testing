@@ -13,11 +13,12 @@ class TestRoutes(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.client = Client()
         cls.author = User.objects.create(username='Sanya')
-        cls.client.force_login(cls.author)
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
         cls.another_user = User.objects.create(username='Randomich')
-        cls.client.force_login(cls.another_user)
+        cls.another_user_client = Client()
+        cls.another_user_client.force_login(cls.another_user)
         cls.note = Note.objects.create(
             title='Погулять',
             text='С собакой',
@@ -27,8 +28,8 @@ class TestRoutes(TestCase):
 
     def test_availability_for_note_edit_delete(self):
         users = (
-            (self.author, HTTPStatus.OK),
-            (self.another_user, HTTPStatus.NOT_FOUND),
+            (self.author_client, HTTPStatus.OK),
+            (self.another_user_client, HTTPStatus.NOT_FOUND),
         )
 
         for user, status in users:
