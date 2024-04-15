@@ -3,6 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+
 from notes.models import Note
 
 User = get_user_model()
@@ -13,7 +14,9 @@ class TestRoutes(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.author = User.objects.create(username='Sanya')
+        cls.author_client = cls.client.force_login(cls.author)
         cls.another_user = User.objects.create(username='Randomich')
+        cls.another_user_client = cls.client.force_login(cls.another_user)
         cls.note = Note.objects.create(
             title='Погулять',
             text='С собакой',
@@ -23,12 +26,11 @@ class TestRoutes(TestCase):
 
     def test_availability_for_note_edit_delete(self):
         users = (
-            (self.author, HTTPStatus.OK),
-            (self.another_user, HTTPStatus.NOT_FOUND),
+            (self.author_client, HTTPStatus.OK),
+            (self.another_user_client, HTTPStatus.NOT_FOUND),
         )
 
         for user, status in users:
-            self.client.force_login(user)
             for name in ('notes:edit', 'notes:delete'):
                 with self.subTest(user=user, name=name):
                     url = reverse(name, args=(self.note.slug,))
@@ -65,3 +67,14 @@ class TestRoutes(TestCase):
                 page = reverse(url)
                 response = self.client.get(page)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_authenticated_user_pages_availability(self):
+        urls = (
+            'notes:list',
+            'notes:success',
+            'notes:add'
+        )
+        for url in urls:
+            page = reverse(url)
+            response = self.author_client.get(page)
+            self.assertEqual(response.status_code, HTTPStatus.OK)

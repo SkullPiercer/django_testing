@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from notes.models import Note
 from notes.forms import WARNING
+from notes.models import Note
 
 User = get_user_model()
 
@@ -27,16 +27,18 @@ class TestNoteCreation(TestCase):
         }
 
     def test_anonymous_user_cant_create_note(self):
+        start_notes = Note.objects.count()
         self.client.post(self.url, data=self.form_data)
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 0)
+        notes_after_post = Note.objects.count()
+        self.assertEqual(start_notes, notes_after_post)
 
     def test_authorized_user_can_create_note(self):
+        start_notes = Note.objects.count()
         response = self.auth_client.post(self.url, data=self.form_data)
         self.assertRedirects(response, self.redirect_url)
         notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 1)
-        note = Note.objects.get()
+        self.assertEqual(notes_count, start_notes + 1)
+        note = Note.objects.last()
         self.assertEqual(note.author, self.user)
         note_data = {
             'title': note.title,
@@ -46,10 +48,11 @@ class TestNoteCreation(TestCase):
         self.assertEqual(note_data, self.form_data)
 
     def test_user_cant_create_existing_slug(self):
+        start_notes = Note.objects.count()
         response = self.auth_client.post(self.url, data=self.form_data)
         self.assertRedirects(response, self.redirect_url)
         notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 1)
+        self.assertEqual(notes_count, start_notes + 1)
         second_note = self.auth_client.post(self.url, data=self.form_data)
         self.assertFormError(
             second_note,
@@ -89,31 +92,33 @@ class TestNoteEditDelete(TestCase):
         }
 
     def test_author_can_delete_note(self):
+        start_notes = Note.objects.count()
         response = self.note_author_client.delete(self.delete_url)
         self.assertRedirects(response, self.redirect_url)
         notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 0)
+        self.assertEqual(notes_count, start_notes - 1)
 
     def test_author_can_edit_note(self):
-        response = self.note_author_client.post(
-            self.edit_url,
-            data=self.form_data
-        )
+        response = self.note_author_client.post(self.edit_url, data=self.form_data)
         self.assertRedirects(response, self.redirect_url)
         self.note.refresh_from_db()
-        self.assertEqual(self.note.text, self.NEW_NOTE_TEXT)
+        self.assertEqual(self.note.text, self.form_data['text'])
+        self.assertEqual(self.note.title, self.form_data['title'])
+        self.assertEqual(self.note.slug, self.form_data['slug'])
+        self.assertEqual(self.note.author, self.note_author)
 
     def test_another_user_cant_delete_note(self):
+        start_notes = Note.objects.count()
         response = self.another_author_client.delete(self.delete_url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 1)
+        self.assertEqual(notes_count, start_notes)
 
     def test_another_user_cant_edit_note(self):
-        response = self.another_author_client.post(
-            self.edit_url,
-            data=self.form_data
-        )
+        response = self.another_author_client.post(self.edit_url, data=self.form_data)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        self.note.refresh_from_db()
-        self.assertEqual(self.note.text, self.NOTE_TEXT)
+        note_from_db = Note.objects.get(id=self.note.id)
+        self.assertEqual(self.note.text, note_from_db.text)
+        self.assertEqual(self.note.author, note_from_db.author)
+        self.assertEqual(self.note.title, note_from_db.title)
+        self.assertEqual(self.note.slug, note_from_db.slug)
