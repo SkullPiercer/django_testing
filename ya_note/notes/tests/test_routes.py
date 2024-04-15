@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 
 from notes.models import Note
@@ -13,6 +13,7 @@ class TestRoutes(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.client = Client()
         cls.author = User.objects.create(username='Sanya')
         cls.author_client = cls.client.force_login(cls.author)
         cls.another_user = User.objects.create(username='Randomich')
