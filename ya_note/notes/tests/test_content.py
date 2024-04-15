@@ -14,6 +14,7 @@ class TestNoteListPage(TestCase):
     def setUpTestData(cls):
         notes = []
         cls.NUMBER_OF_NOTES = 10
+        cls.client = Client()
         cls.url = reverse('notes:list')
         cls.user = User.objects.create(username='Randomich')
         cls.user_client = cls.client.force_login(cls.user)
