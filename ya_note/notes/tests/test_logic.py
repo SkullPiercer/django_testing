@@ -99,7 +99,10 @@ class TestNoteEditDelete(TestCase):
         self.assertEqual(notes_count, start_notes - 1)
 
     def test_author_can_edit_note(self):
-        response = self.note_author_client.post(self.edit_url, data=self.form_data)
+        response = self.note_author_client.post(
+            self.edit_url,
+            data=self.form_data
+        )
         self.assertRedirects(response, self.redirect_url)
         self.note.refresh_from_db()
         self.assertEqual(self.note.text, self.form_data['text'])
@@ -115,7 +118,10 @@ class TestNoteEditDelete(TestCase):
         self.assertEqual(notes_count, start_notes)
 
     def test_another_user_cant_edit_note(self):
-        response = self.another_author_client.post(self.edit_url, data=self.form_data)
+        response = self.another_author_client.post(
+            self.edit_url,
+            data=self.form_data
+        )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note_from_db = Note.objects.get(id=self.note.id)
         self.assertEqual(self.note.text, note_from_db.text)

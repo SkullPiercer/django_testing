@@ -27,7 +27,9 @@ def test_home_page_content_for_all_users(user, db, news):
         (pytest.lazy_fixture('client'), False),
     )
 )
-def test_comment_form_on_page_for_different_users(user, db, form_on_page, news):
+def test_comment_form_on_page_for_different_users(
+        user, db, form_on_page, news
+):
     url = reverse('news:detail', args=(news.id,))
     response = user.get(url)
     if form_on_page:
