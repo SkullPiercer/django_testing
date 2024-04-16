@@ -16,7 +16,8 @@ from news.forms import CommentForm
 def test_home_page_content_for_all_users(user, db, homepage_news, home_url):
     url = home_url
     response = user.get(url)
-    assert len(response.context['object_list']) == settings.NEWS_COUNT_ON_HOME_PAGE
+    assert (len(response.context['object_list'])
+            == settings.NEWS_COUNT_ON_HOME_PAGE)
 
 
 @pytest.mark.parametrize(
