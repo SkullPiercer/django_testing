@@ -2,9 +2,8 @@ from http import HTTPStatus
 
 import pytest
 from django.test import Client
-from pytest_lazyfixture import lazy_fixture as lf
-
 from pytest_django.asserts import assertRedirects
+from pytest_lazyfixture import lazy_fixture as lf
 
 
 STATUS_OK = HTTPStatus.OK

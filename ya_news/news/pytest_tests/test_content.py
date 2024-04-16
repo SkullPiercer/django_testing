@@ -13,11 +13,10 @@ from news.forms import CommentForm
         (lf('client')),
     )
 )
-def test_home_page_content_for_all_users(user, db, news):
-    url = reverse('news:home')
+def test_home_page_content_for_all_users(user, db, homepage_news, home_url):
+    url = home_url
     response = user.get(url)
-    assert news in response.context['object_list']
-    assert len(response.context['object_list']) == 1
+    assert len(response.context['object_list']) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 @pytest.mark.parametrize(
@@ -57,7 +56,10 @@ def test_news_count_and_date(homepage_news, client, home_url):
 
 
 @pytest.mark.django_db
-def test_comments_are_sorted(comments, news):
+def test_comments_are_sorted(comments, news, detail_url, client):
+    response = client.get(detail_url)
+    assert 'news' in response.context
+    news = response.context['news']
     all_comments = news.comment_set.all()
     all_timestamps = [comment.created for comment in all_comments]
     assert sorted(all_timestamps) == all_timestamps
